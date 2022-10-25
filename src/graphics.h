@@ -15,6 +15,7 @@
 
 void init(void);
 void init_debug_font(void);
+void draw_rectangle(int x, int y, int width, int height, int r, int g, int b);
 void display(void);
 
 #endif

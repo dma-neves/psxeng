@@ -9,9 +9,15 @@
 #define NTSC
 //#define PAL
 
+#define OTLEN 8 // Ordering talbe length
+
 DISPENV disp[2];
 DRAWENV draw[2];
 int db;
+
+u_long ot[2][OTLEN]; // Ordering Table with 8 elements
+char primbuff[2][32768]; // Primitive buffer
+char* nextPrim; // Next primitive pointer
 
 void init(void)
 {
@@ -55,6 +61,9 @@ void init(void)
 	// Apply enviornments
 	PutDispEnv(&disp[0]);
 	PutDrawEnv(&draw[0]);
+
+	// Set initial primitive pointer address
+	nextPrim = primbuff[db];
 }
 
 
@@ -66,6 +75,22 @@ void init_debug_font(void)
 	FntOpen(0,8,320,224,0,100);
 }
 
+void draw_rectangle(int x, int y, int width, int height, int r, int g, int b)
+{
+	TILE* tile;
+	tile = (TILE*)nextPrim;
+
+	// Initialize primitive
+	setTile(tile);
+	setXY0(tile, x, y);
+	setWH(tile, width, height);
+	setRGB0(tile, r, g, b);
+
+	// Add primitive to the ordering table
+	addPrim(ot[db], tile);
+	nextPrim += sizeof(TILE);
+}
+
 void display(void)
 {
 	// Wait for GPU to finish drawing all primitives and for
@@ -73,11 +98,20 @@ void display(void)
 	DrawSync(0);
 	VSync(0);
 
-	// Switch buffers
-	db = !db;
 	PutDispEnv(&disp[db]);
 	PutDrawEnv(&draw[db]);
 
 	// Enable display
 	SetDispMask(1);
+
+	// Draw ordering table
+	DrawOTag(ot[db] + OTLEN-1);
+
+	// Switch buffers
+	db = !db;
+
+	// Set next primitive pointer to the new primitive buffer
+	nextPrim = primbuff[db];
+	// Clear ordering table
+	ClearOTagR(ot[db], OTLEN);
 }
