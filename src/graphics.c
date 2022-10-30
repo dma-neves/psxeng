@@ -16,16 +16,10 @@ DISPENV disp[2];
 DRAWENV draw[2];
 int db;
 
-/* Debug font */
+/* Ordering table */
 u_long ot[2][OTLEN]; // Ordering Table with 8 elements
 char primbuff[2][32768]; // Primitive buffer
 char* nextPrim; // Next primitive pointer
-
-
-/* TIM image parameters */
-int tim_mode;
-RECT tim_prect,tim_crect;
-int tim_uoffs,tim_voffs;
 
 void init(void)
 {
@@ -69,15 +63,15 @@ void init(void)
 	// Set initial primitive pointer address
 	nextPrim = primbuff[db];
 
-	load_assets();
-
-    // set tpage of lone texture as initial tpage
-    draw[0].tpage = getTPage( tim_mode&0x3, 0, tim_prect.x, tim_prect.y );
-    draw[1].tpage = getTPage( tim_mode&0x3, 0, tim_prect.x, tim_prect.y );
-
 	// Apply enviornments
 	PutDispEnv(&disp[0]);
 	PutDrawEnv(&draw[0]);
+}
+
+void set_texture_page(TimParam tparam)
+{
+    draw[0].tpage = getTPage( tparam.mode&0x3, 0, tparam.prect.x, tparam.prect.y );
+    draw[1].tpage = getTPage( tparam.mode&0x3, 0, tparam.prect.x, tparam.prect.y );
 }
 
 
@@ -130,12 +124,12 @@ void display(void)
 	ClearOTagR(ot[db], OTLEN);
 }
 
-static void load_texture(int* tim, TIM_IMAGE* tparam)
+TimParam load_texture(int* tim, TIM_IMAGE* timage)
 {
-	GetTimInfo(tim, tparam);
+	GetTimInfo(tim, timage);
 
 	// Upload pixel data to framebuffer
-	LoadImage(tparam->prect, tparam->paddr);
+	LoadImage(timage->prect, timage->paddr);
 	DrawSync(0);
 
 	// Upload CLUT to framebuffer if present
@@ -143,46 +137,42 @@ static void load_texture(int* tim, TIM_IMAGE* tparam)
 	// the color depth of the TIM file are in bits 0-3 of the mode field and 
 	// CLUT presence is determined by testing bit 4. 
 
-	if(tparam->mode & 0x8)
+	if(timage->mode & 0x8)
 	{
-		LoadImage(tparam->crect, tparam->caddr);
+		LoadImage(timage->crect, timage->caddr);
 		DrawSync(0);
 	}
-}
 
+	// Create and return TimParam struct with all the usefull parameters
 
-// Load textures and other stuff possibly
-void load_assets()
-{
-	extern int tim_my_image[];
-	TIM_IMAGE my_image;
-
-	load_texture(tim_my_image, &my_image);
+	TimParam tparam;
 
 	// Copy the TIM coordinates
-    tim_prect   = *my_image.prect;
-    tim_crect   = *my_image.crect;
-    tim_mode    = my_image.mode;
+    tparam.prect = *timage->prect;
+    tparam.crect   = *timage->crect;
+    tparam.mode    = timage->mode;
 
 	// Calculate U,V offset for TIMs that are not page aligned
-    tim_uoffs = (tim_prect.x%64)<<(2-(tim_mode&0x3));
-    tim_voffs = (tim_prect.y&0xff);
+    tparam.uoffs = (tparam.prect.x%64)<<(2-(tparam.mode&0x3));
+    tparam.voffs = (tparam.prect.y&0xff);
+
+	return tparam;
 }
 
-void draw_sprite()
+void draw_sprite(TimParam tparam, Rect rect)
 {
 	TILE *tile; // Pointer for TILE
 	SPRT *sprt; // Pointer for SPR
 
 	sprt = (SPRT*)nextPrim;
 
-		setSprt(sprt);                  			// Initialize the primitive (very important)
-		setXY0(sprt, 48, 48);           			// Position the sprite at (48,48)
-		setWH(sprt, 64, 64);            			// Set size to 64x64 pixels
-		setUV0(sprt, tim_uoffs, tim_voffs); 	 	// Set UV coordinates
-		setClut(sprt, tim_crect.x, tim_crect.y); 	// Set CLUT coordinates to sprite
-		setRGB0(sprt, 128, 128, 128); 				// Set primitive color
-		addPrim(ot[db], sprt);          			// Sort primitive to OT
+	setSprt(sprt);												// Initialize the primitive (very important)
+	setXY0(sprt, rect.x, rect.y);								// Position the sprite at (48,48)
+	setWH(sprt, rect.width, rect.height);						// Set size to 64x64 pixels
+	setUV0(sprt, tparam.uoffs, tparam.voffs); 					// Set UV coordinates
+	setClut(sprt, tparam.crect.x, tparam.crect.y);				// Set CLUT coordinates to sprite
+	setRGB0(sprt, rect.color.r, rect.color.g, rect.color.b); 	// Set primitive color
+	addPrim(ot[db], sprt);										// Sort primitive to OT
 
-		nextPrim += sizeof(SPRT);
+	nextPrim += sizeof(SPRT);
 }

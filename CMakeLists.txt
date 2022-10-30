@@ -16,7 +16,8 @@ psn00bsdk_add_executable(
 	${_SOURCES}
 )
 
-psn00bsdk_target_incbin(engine PRIVATE tim_my_image textures/TEXTURE64.TIM)
+psn00bsdk_target_incbin(engine PRIVATE tim_texture64 textures/TEXTURE64.TIM)
+psn00bsdk_target_incbin(engine PRIVATE tim_sonylogo64 textures/SONYLOGO64.TIM)
 
 psn00bsdk_add_cd_image(
 	iso      # Target name

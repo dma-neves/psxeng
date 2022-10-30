@@ -14,12 +14,16 @@
 #include <psxgpu.h>
 
 #include "geometry.h"
+#include "util.h"
 
 void init(void);
 void init_debug_font(void);
-void draw_rectangle(Rect rect);
 void display(void);
-void load_assets(); 
-void draw_sprite();
+
+void set_texture_page(TimParam tparam);
+TimParam load_texture(int* tim, TIM_IMAGE* timage);
+
+void draw_rectangle(Rect rect);
+void draw_sprite(TimParam tparam, Rect rect);
 
 #endif
