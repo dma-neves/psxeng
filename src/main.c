@@ -30,7 +30,8 @@ int main()
 		FntFlush(-1);
 
 		//draw_rectangle(32,32,64,64,255,255,0);
-		draw_rectangle(xpos,ypos,64,64,255,255,0);
+		draw_rectangle( (Rect){.x=xpos, .y=ypos, .width=64, .height=64, ((Color){.r=255, .g=255, .b=0}) } );
+		draw_sprite();
 
 		if(xpos + w + xvel > 320) xvel *= -1;
 		if(xpos + xvel < 0) xvel *= -1;

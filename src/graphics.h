@@ -1,5 +1,5 @@
 /*
-*	Simple psx graphics api
+*	Simple psx graphics module
 *	Author: David Neves
 *	Based on http://lameguy64.net/tutorials/pstutorials/
 */
@@ -13,9 +13,13 @@
 #include <psxgte.h>
 #include <psxgpu.h>
 
+#include "geometry.h"
+
 void init(void);
 void init_debug_font(void);
-void draw_rectangle(int x, int y, int width, int height, int r, int g, int b);
+void draw_rectangle(Rect rect);
 void display(void);
+void load_assets(); 
+void draw_sprite();
 
 #endif
