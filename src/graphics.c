@@ -68,13 +68,6 @@ void init(void)
 	PutDrawEnv(&draw[0]);
 }
 
-void set_texture_page(TimParam tparam)
-{
-    draw[0].tpage = getTPage( tparam.mode&0x3, 0, tparam.prect.x, tparam.prect.y );
-    draw[1].tpage = getTPage( tparam.mode&0x3, 0, tparam.prect.x, tparam.prect.y );
-}
-
-
 void init_debug_font(void)
 {
 	// Load internal font texture
@@ -173,6 +166,10 @@ void draw_sprite(TimParam tparam, Rect rect)
 	setClut(sprt, tparam.crect.x, tparam.crect.y);				// Set CLUT coordinates to sprite
 	setRGB0(sprt, rect.color.r, rect.color.g, rect.color.b); 	// Set primitive color
 	addPrim(ot[db], sprt);										// Sort primitive to OT
-
 	nextPrim += sizeof(SPRT);
+
+	DR_TPAGE* tpage = (DR_TPAGE*)nextPrim;
+	setDrawTPage(tpage, 0, 1, getTPage(tparam.mode&0x3, 0, tparam.prect.x, tparam.prect.y));
+	addPrim(ot[db], tpage);		
+	nextPrim += sizeof(DR_TPAGE);
 }

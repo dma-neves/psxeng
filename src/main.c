@@ -22,17 +22,15 @@ int main()
     TimParam sonylogo64_tparam = load_texture(tim_sonylogo64, &sonylogo64);
     Rect sonylogo64_rect = (Rect){.x=xpos, .y=ypos, .width=64, .height=64, ((Color){.r=128, .g=128, .b=128}) };
 
-	/*
 	extern int tim_texture64[];
 	TIM_IMAGE texture64;
 	TimParam texture64_tparam = load_texture(tim_texture64, &texture64);
 	Rect texture64_rect = (Rect){.x=48, .y=48, .width=64, .height=64, .color=(Color){.r=128, .g=128, .b=128}};
-	*/
 
 	Rect rect = (Rect){.x=xpos, .y=ypos, .width=64, .height=64, ((Color){.r=255, .g=255, .b=0}) };
 
 	//set_texture_page(texture64_tparam);
-	set_texture_page(sonylogo64_tparam);
+	//set_texture_page(sonylogo64_tparam);
 
 	while(1)
 	{
@@ -46,9 +44,9 @@ int main()
 		FntPrint(-1, "SECONDS=%d\n", sec);
 		FntFlush(-1);
 
-		draw_rectangle( rect );
+		// draw_rectangle( rect );
 
-		//draw_sprite(texture64_tparam, texture64_rect);
+		draw_sprite(texture64_tparam, texture64_rect);
 		draw_sprite(sonylogo64_tparam, sonylogo64_rect);
 
 		if(xpos + w + xvel > 320) xvel *= -1;
