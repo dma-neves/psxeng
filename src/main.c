@@ -1,9 +1,11 @@
 #include "graphics.h"
+#include "input.h"
 
 int main()
 {
-	init();
+	init_graphics();
 	init_debug_font();
+	init_pad();
 
 	int counter = 0;
 	int sec = 0;
@@ -27,10 +29,7 @@ int main()
 	TimParam texture64_tparam = load_texture(tim_texture64, &texture64);
 	Rect texture64_rect = (Rect){.x=48, .y=48, .width=64, .height=64, .color=(Color){.r=128, .g=128, .b=128}};
 
-	Rect rect = (Rect){.x=xpos, .y=ypos, .width=64, .height=64, ((Color){.r=255, .g=255, .b=0}) };
-
-	//set_texture_page(texture64_tparam);
-	//set_texture_page(sonylogo64_tparam);
+	// Rect rect = (Rect){.x=xpos, .y=ypos, .width=64, .height=64, ((Color){.r=255, .g=255, .b=0}) };
 
 	while(1)
 	{
@@ -60,6 +59,14 @@ int main()
 		sonylogo64_rect.x = xpos;
 		sonylogo64_rect.y = ypos;
 
+		if(button_pressed(PAD_RIGHT))
+			texture64_rect.x++;
+		if(button_pressed(PAD_LEFT))
+			texture64_rect.x--;
+		if(button_pressed(PAD_UP))
+			texture64_rect.y--;
+		if(button_pressed(PAD_DOWN))
+			texture64_rect.y++;
 		display();
 	}
 	

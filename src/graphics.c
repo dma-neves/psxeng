@@ -21,7 +21,7 @@ u_long ot[2][OTLEN]; // Ordering Table with 8 elements
 char primbuff[2][32768]; // Primitive buffer
 char* nextPrim; // Next primitive pointer
 
-void init(void)
+void init_graphics(void)
 {
 	ResetGraph(0); // Reset GPU and enable interrupts
 

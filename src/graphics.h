@@ -16,7 +16,7 @@
 #include "geometry.h"
 #include "util.h"
 
-void init(void);
+void init_graphics(void);
 void init_debug_font(void);
 void display(void);
 
