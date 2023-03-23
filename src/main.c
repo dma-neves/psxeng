@@ -4,8 +4,11 @@
 int main()
 {
 	init_graphics();
+	init_graphics_3d();
 	init_debug_font();
 	init_pad();
+
+	extern Object cube;
 
 	int counter = 0;
 	int sec = 0;
@@ -29,10 +32,12 @@ int main()
 	TimParam texture64_tparam = load_texture(tim_texture64, &texture64);
 	Rect texture64_rect = (Rect){.x=48, .y=48, .width=64, .height=64, .color=(Color){.r=128, .g=128, .b=128}};
 
-	// Rect rect = (Rect){.x=xpos, .y=ypos, .width=64, .height=64, ((Color){.r=255, .g=255, .b=0}) };
-
 	while(1)
 	{
+		/* Make the cube spin */
+		cube.rot.vx += 16;
+		cube.rot.vz += 16;
+
 		if(counter++ >= 60)
 		{
 			counter = 0;
@@ -42,8 +47,6 @@ int main()
 		FntPrint(-1, "HELLO WORLD\n");
 		FntPrint(-1, "SECONDS=%d\n", sec);
 		FntFlush(-1);
-
-		// draw_rectangle( rect );
 
 		draw_sprite(texture64_tparam, texture64_rect);
 		draw_sprite(sonylogo64_tparam, sonylogo64_rect);
@@ -67,7 +70,11 @@ int main()
 			texture64_rect.y--;
 		if(button_pressed(PAD_DOWN))
 			texture64_rect.y++;
+
+		draw_object(&cube);
+
 		display();
+
 	}
 	
 	return 0;

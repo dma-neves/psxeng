@@ -18,4 +18,10 @@ typedef struct TimParam
 
 } TimParam;
 
+/* For easier handling of vertex indices */
+typedef struct
+{
+	short v0,v1,v2,v3;
+} INDEX;
+
 #endif
