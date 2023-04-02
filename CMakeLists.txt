@@ -9,7 +9,7 @@ project(
 )
 
 file(GLOB TEXTURES textures/*.tim)
-file(GLOB _SOURCES src/*.c)
+file(GLOB _SOURCES src/*.c examples/car/*.c)
 
 psn00bsdk_add_executable(
 	engine STATIC
