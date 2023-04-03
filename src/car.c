@@ -7,6 +7,7 @@ SVECTOR car_norms[] = {{0.0, 4096.0, 0.0}, {0.0, -0.0, 4096.0}, {0.0, -0.0, 4096
 #define CAR_FACES 22
 
 
+
 Object car = {
     .verts = car_verts,
     .norms = car_norms,

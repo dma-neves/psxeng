@@ -42,6 +42,10 @@ with open(file_name, 'r') as file:
 
             # extract vertex indices from line containing a face 
             face_indices = list(map(lambda s: int( s.split("/")[0] )-1, line[2:].split()))
+            if len(face_indices) != 4:
+                print("Error, only quads are supported for faces. nfaces =", len(face_indices))
+                sys.exit()
+                
             indices.append(face_indices)
 
             v1 = vertices[face_indices[0]]

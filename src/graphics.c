@@ -27,7 +27,7 @@
 // #define PACKET_LEN 32768 // Packet length
 
 #define OTLEN			256
-#define PACKET_LEN		1024
+#define PACKET_LEN		1024*4
 
 /* Double buffer structure */
 typedef struct {
@@ -54,11 +54,14 @@ void init_graphics(void)
 #ifdef NTSC
 	// Configure display enviornments for 320*240 mode
 	SetDefDispEnv(&db[0].disp, 0, 0, SCREEN_XRES, SCREEN_YRES);
-	SetDefDispEnv(&db[1].disp, 0, 240, SCREEN_XRES, SCREEN_YRES);
+	SetDefDispEnv(&db[1].disp, 0, SCREEN_YRES, SCREEN_XRES, SCREEN_YRES);
 
 	// Configure draw enviornments for th display enviornments
-	SetDefDrawEnv(&db[0].draw, 0, 240, SCREEN_XRES, SCREEN_YRES);
+	SetDefDrawEnv(&db[0].draw, 0, SCREEN_YRES, SCREEN_XRES, SCREEN_YRES);
 	SetDefDrawEnv(&db[1].draw, 0, 0, SCREEN_XRES, SCREEN_YRES);
+
+	SetVideoMode(MODE_NTSC);
+
 #endif
 
 #ifdef PAL
@@ -90,6 +93,8 @@ void init_graphics(void)
 	// Apply enviornments
 	PutDispEnv(&db[0].disp);
 	PutDrawEnv(&db[0].draw);
+
+	ClearOTagR(db[db_active].ot, OTLEN);
 }
 
 void init_debug_font(void)
@@ -334,6 +339,11 @@ void draw_object(Object* obj)
 		/* Advance to make another primitive */
 		pol4++;
 		
+		if(pol4 >= &db[db_active].prim[PACKET_LEN-1])
+		{
+			// TODO
+			break;
+		}
 	}
 	
 	/* Update nextpri variable */
