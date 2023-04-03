@@ -15,11 +15,6 @@ int main()
 
 	while(1)
 	{
-		/* Make the cube spin */
-		// car.rot.vx = 8;
-		// car.rot.vz += 16;
-        // car.rot.vy += 4;
-
 		if(counter++ >= 60)
 		{
 			counter = 0;
@@ -43,7 +38,7 @@ int main()
         if(button_pressed(PAD_SQUARE))
             car.rot.vz -= 8;
 
-		draw_object(&car);
+		draw_object_trig(&car);
 
 		display();
 

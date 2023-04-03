@@ -29,7 +29,7 @@ int main()
 		FntPrint(-1, "SECONDS=%d\n", sec);
 		FntFlush(-1);
 
-		draw_object(&cube);
+		draw_object_trig(&cube);
 
 		display();
 

@@ -27,7 +27,7 @@
 // #define PACKET_LEN 32768 // Packet length
 
 #define OTLEN			256
-#define PACKET_LEN		1024*4
+#define PACKET_LEN		1024*8
 
 /* Double buffer structure */
 typedef struct {
@@ -251,9 +251,11 @@ void init_graphics_3d()
 
 MATRIX	mtx,lmtx;				/* Rotation matrices for geometry and lighting */
 
-POLY_F4	*pol4;					/* Flat shaded quad primitive pointer */
 
-void draw_object(Object* obj)
+
+POLY_F3	*pol3;					/* Flat shaded quad primitive pointer */
+
+void draw_object_trig(Object* obj)
 {
 	int i,p,xy_temp;
 
@@ -273,8 +275,8 @@ void draw_object(Object* obj)
 	gte_SetLightMatrix( &lmtx );
 	
 	
-	/* Draw the cube */
-	pol4 = (POLY_F4*)next_prim;	
+	/* Draw */
+	pol3 = (POLY_F3*)next_prim;	
 	
 	for( i=0; i<obj->nfaces; i++ ) {
 		
@@ -307,22 +309,22 @@ void draw_object(Object* obj)
 			continue;
 		
 		/* Initialize a quad primitive */
-		setPolyF4( pol4 );
+		setPolyF3( pol3 );
 		
 		/* Set the projected vertices to the primitive */
-		gte_stsxy0( &pol4->x0 );
-		gte_stsxy1( &pol4->x1 );
-		gte_stsxy2( &pol4->x2 );
+		gte_stsxy0( &pol3->x0 );
+		gte_stsxy1( &pol3->x1 );
+		gte_stsxy2( &pol3->x2 );
 		
 		/* Compute the last vertex and set the result */
-		gte_ldv0( &obj->verts[obj->indices[i].v3] );
-		gte_rtps();
-		gte_stsxy( &pol4->x3 );
+		// gte_ldv0( &obj->verts[obj->indices[i].v3] );
+		// gte_rtps();
+		// gte_stsxy( &pol3->x3 );
 		
 		/* Load primitive color even though gte_ncs() doesn't use it. */
 		/* This is so the GTE will output a color result with the */
 		/* correct primitive code. */
-		gte_ldrgb( &pol4->r0 );
+		gte_ldrgb( &pol3->r0 );
 		
 		/* Load the face normal */
 		gte_ldv0( &obj->norms[i] );
@@ -331,15 +333,15 @@ void draw_object(Object* obj)
 		gte_ncs();
 		
 		/* Store result to the primitive */
-		gte_strgb( &pol4->r0 );
+		gte_strgb( &pol3->r0 );
 		
 		/* Sort primitive to the ordering table */
-		addPrim( db[db_active].ot+(p>>2), pol4 );
+		addPrim( db[db_active].ot+(p>>2), pol3 );
 		
 		/* Advance to make another primitive */
-		pol4++;
+		pol3++;
 		
-		if(pol4 >= &db[db_active].prim[PACKET_LEN-1])
+		if(pol3 >= &db[db_active].prim[PACKET_LEN-1])
 		{
 			// TODO
 			break;
@@ -348,5 +350,5 @@ void draw_object(Object* obj)
 	
 	/* Update nextpri variable */
 	/* (IMPORTANT if you plan to sort more primitives after this) */
-	next_prim = (char*)pol4;
+	next_prim = (char*)pol3;
 }

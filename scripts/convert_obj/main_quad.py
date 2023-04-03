@@ -29,8 +29,6 @@ if len(sys.argv) != 2:
     sys.exit()
 
 file_name = sys.argv[1]
-object_name = file_name.replace(".obj", "")
-
 
 with open(file_name, 'r') as file:
 
@@ -44,8 +42,8 @@ with open(file_name, 'r') as file:
 
             # extract vertex indices from line containing a face 
             face_indices = list(map(lambda s: int( s.split("/")[0] )-1, line[2:].split()))
-            if len(face_indices) != 3:
-                print("Error, only traingle faces are supported for faces. nindices =", len(face_indices))
+            if len(face_indices) != 4:
+                print("Error, only quads are supported for faces. nfaces =", len(face_indices))
                 sys.exit()
                 
             indices.append(face_indices)
@@ -62,14 +60,14 @@ vertices = list(map(lambda v: [VERTEX_SCALE*v[0], VERTEX_SCALE*v[1], VERTEX_SCAL
 nfaces = len(indices)
 
 # Reorder indices so they are rendered correctly
-indices = list(map(lambda i: [ i[2], i[1], i[0] ], indices))
+indices = list(map(lambda i: [ i[3], i[2], i[0], i[1] ], indices))
 
 # convert lists to strings representing c arrays of structs
 vertices = str(vertices).replace("[", "{").replace("]", "}")
 indices = str(indices).replace("[", "{").replace("]", "}")
 normals = str(normals).replace("[", "{").replace("]", "}")
 
-print('SVECTOR ' + object_name + '_verts[] =', vertices, ";")
-print('INDEX ' + object_name + '_indices[] =', indices, ";")
-print('SVECTOR ' + object_name + '_norms[] =', normals, ";")
-print('#define ' + object_name.upper() + '_FACES', nfaces)
+print('SVECTOR car_verts[] =', vertices, ";")
+print('INDEX car_indices[] =', indices, ";")
+print('SVECTOR car_norms[] =', normals, ";")
+print('#define CAR_FACES', nfaces)

@@ -29,6 +29,7 @@ void draw_sprite(TimParam tparam, Rect rect);
 // ######################  3d stuff ######################
 
 void init_graphics_3d();
-void draw_object(Object* obj);
+//void draw_object_quad(Object* obj);
+void draw_object_trig(Object* obj);
 
 #endif
